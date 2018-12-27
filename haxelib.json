@@ -1,0 +1,13 @@
+{
+  "name": "sweet.ribbon",
+  "url" : "https://github.com/JeremyGiner/sweet_ribbon/",
+  "license": "MIT",
+  "tags": ["cross", "sweet", "serializer"],
+  "description": "Binary serializer deserializer.",
+  "version": "1.0.0",
+  "classPath": "src/",
+  "releasenote": "Initial release, work in progress.",
+  "contributors": ["GINER jeremy"],
+  "dependencies": {
+  }
+}

@@ -1,0 +1,9 @@
+
+#haxelib git sweet.functor https://github.com/JeremyGiner/sweet_functor.git
+-lib sweet.functor
+
+-cp src
+-cp test
+
+-main MainTest
+-java bin/RibbonTest
