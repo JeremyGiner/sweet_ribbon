@@ -9,5 +9,6 @@
   "releasenote": "Initial release, work in progress.",
   "contributors": ["GINER jeremy"],
   "dependencies": {
+    "sweet.functor": ""
   }
 }
