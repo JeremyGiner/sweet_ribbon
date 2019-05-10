@@ -1,4 +1,6 @@
 package sweet.ribbon;
+import sweet.ribbon.encoder.ISubEncoder;
+import sweet.ribbon.encoder.ISubEncoderBaseType;
 import sweet.ribbon.encoder.IntEncoder;
 import sweet.ribbon.encoder.StringEncoder;
 import sweet.functor.validator.Equal;
@@ -17,18 +19,10 @@ class RibbonEncoder {
 
 	var _oStrategy :RibbonStrategy;
 	
-	static var aBasicTypeId = {
-		'null': -1,
-		'Bool': -2,
-		'Int16': -3,
-		'Int': -4,
-		'Int64': -5,
-		'Array': -6,
-		'String': -7,
-	}
-	
 	var _oStringEncoder :StringEncoder;
 	var _oIntEncoder :IntEncoder;
+	
+	static var _oDEPTHSTOP = new DEPTHSTOP();
 	
 //_____________________________________________________________________________
 //	Constructor
@@ -47,36 +41,19 @@ class RibbonEncoder {
 		var aMappingInfo = new List<MappingInfo>();
 		var aBytes = new List<Bytes>();
 		
-		var aObjectQueue = new List<Dynamic>();
-		var mObjectIndex = new ObjectMap<Dynamic,Int>();
-		var iObjectIndex = 0;
-		
-		aObjectQueue.push( o );
-		
-		while (	!aObjectQueue.isEmpty() ) {
+		var oIterator = new Iterator( o, _oStrategy );
+		for ( o in oIterator ) {
 			
-			var o = aObjectQueue.pop();
-			
-			// Case : recurence -> use reference
-			if ( Reflect.isObject( o ) )
-			if ( mObjectIndex.exists( o ) )
-				o = new Reference( mObjectIndex.get( o ) );
-			else
-				mObjectIndex.set( o, iObjectIndex++ );
-			
-			// Get TypeId
-			var iType = _oStrategy.getCodexIndex( o );
-			if ( iType == null )
-				throw 'No sub-encoder/decoder, for a given object'; //TODO: improve message
+			var iCodexIndex = oIterator.getCodexIndex();
 			
 			// Encode type
 			var oBytes = Bytes.alloc( 1 );
-			oBytes.set( 0, iType );
+			oBytes.set( 0, iCodexIndex );
 			aBytes.add( oBytes );
 			
 			//_________________________
 			// Case : Object encoding
-			var oEncoder = _oStrategy.getEncoder( iType );
+			var oEncoder = oIterator.getEncoder();
 			var oData = null;
 			if ( oEncoder != null ) {
 				
@@ -94,21 +71,13 @@ class RibbonEncoder {
 				if( oData != null )
 					aBytes.add( oData );
 				
-				// Queue children
-				var aChild = oEncoder.getChildAr( o );
-				if( aChild != null )
-				for( o in aChild )
-					aObjectQueue.push( o );
-				
 				continue;
 			}
 			
 			//_________________________
 			// Case : Atomic encoding
-			var oEncoderAtomic = _oStrategy.getEncoderAtomic( iType );
+			var oEncoderAtomic = _oStrategy.getEncoderAtomic( iCodexIndex );
 			if( oEncoderAtomic != null ) {
-			
-				// Assume oEncoderAtomic != null
 				
 				// Encode data
 				var oData = oEncoderAtomic.encode( o );
@@ -117,11 +86,8 @@ class RibbonEncoder {
 				continue;
 			}
 			
-			throw 'could not find encoder'; //TODO : improve message
-			
-			
-		} //End of stack iteration
-		
+			throw 'Codex index #'+iCodexIndex+' returned by the strategy is not associated to any codex';
+		}
 		
 		// Encode class desc
 		for ( oMappingInfo in aMappingInfo ) {
@@ -155,13 +121,108 @@ class RibbonEncoder {
 		return BytesTool.joinList( aBytes );
 	}
 	
-	
 	function _getKey( oMappingInfo :MappingInfo ) {
 		return oMappingInfo.getClassName() 
 			+ ':' 
 			+ oMappingInfo.getFieldNameAr().join('.')
 		;
 	}
+}
+/**
+ * iterate throught an object using the encoders of a strategy
+ * - circular/multiple reference are replace by a Reference object
+ * TODO: simplify ?
+ */
+private class Iterator {
+	
+	var _aObjectQueue :List<Dynamic>;
+	var _aParentStack :List<Dynamic>;
+	var _mObjectIndex :ObjectMap<Dynamic,Int>;
+	var _oStrategy :RibbonStrategy;
+	
+	var _iType :Null<Int>;
+	var _oEncoder :ISubEncoder<Dynamic>;
+	var _oEncoderSimple :ISubEncoderBaseType<Dynamic>; // TODO
+	var _iDepthStopCount :Int;
+	var _iObjectIndex :Int;
+	
+	static var _oDEPTHSTOP = new DEPTHSTOP();
+	
+	public function new( o :Dynamic, oStrategy :RibbonStrategy ) {
+		
+		_aObjectQueue = new List<Dynamic>();
+		_aParentStack = new List<Dynamic>();
+		_mObjectIndex = new ObjectMap<Dynamic,Int>();
+		
+		_iDepthStopCount = 0;
+		_oStrategy = oStrategy;
+		_aObjectQueue.push( o );
+		_iType = null;
+		_oEncoder = null;
+		_iObjectIndex = 0;
+	}
+	
+	public function hasNext() {
+		return _aObjectQueue.length - _iDepthStopCount != 0;
+	}
+	public function next() {
+		var o = _aObjectQueue.pop();
+			
+		// Case depth stop
+		while ( o == _oDEPTHSTOP ) {
+			_aParentStack.pop();
+			_iDepthStopCount--;
+			o = _aObjectQueue.pop();
+		}
+		
+		// Case : recurence -> use reference
+		if ( Reflect.isObject( o ) )
+		if ( _mObjectIndex.exists( o ) )
+			o = new Reference( _mObjectIndex.get( o ) );
+		else
+			_mObjectIndex.set( o, _iObjectIndex++ );
+			
+		// Get TypeId
+		_iType = _oStrategy.getCodexIndex( o, _aParentStack );
+		if ( _iType == null )
+			throw 'No sub-encoder/decoder, for a given object'; //TODO: improve message
+		
+		//_________________________
+		// Case : Object encoding
+		_oEncoder = _oStrategy.getEncoder( _iType );
+		var oData = null;
+		if ( _oEncoder != null ) {
+			
+			// Queue children
+			var aChild = _oEncoder.getChildAr( o );
+			if ( aChild != null && aChild.length > 0 ) {
+				_aParentStack.push( o );
+				_aObjectQueue.push( _oDEPTHSTOP );
+				_iDepthStopCount++;
+				for( o in aChild )
+					_aObjectQueue.push( o );
+			}
+		}
+		
+		return o;
+	}
+	
+	public function getParentStack() {
+		return _aParentStack;
+	}
+	public function getCodexIndex() {
+		return _iType; 
+	}
+	public function getEncoder() {
+		return _oEncoder;
+	}
+}
+
+/**
+ * Token class used by iterator as delimiter in order to update his parent stack
+ */
+private class DEPTHSTOP {
+	public function new() {}
 }
 
 /*

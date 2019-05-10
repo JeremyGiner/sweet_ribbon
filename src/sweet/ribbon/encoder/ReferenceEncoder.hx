@@ -1,6 +1,5 @@
 package sweet.ribbon.encoder;
 import sweet.ribbon.encoder.ISubEncoderBaseType;
-import sweet.ribbon.RibbonStrategy.Reference;
 import haxe.io.Bytes;
 
 

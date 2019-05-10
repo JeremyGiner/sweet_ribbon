@@ -21,8 +21,7 @@ class RibbonMacro {
 			case EConst(CIdent(cls)):
 				switch (Context.getType(cls)) {
 					case TInst (_.get() => t, _):
-						var path = { name: t.module, sub: t.module == t.name ? null : t.name, pack: t.pack };
-						// Create a new instance from the path/type here.
+						//var path = { name: t.module, sub: t.module == t.name ? null : t.name, pack: t.pack };
 						s = t.name;
 					default:
 						throw "Invalid type";

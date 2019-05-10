@@ -1,6 +1,5 @@
 package sweet.ribbon.decoder;
 import sweet.ribbon.tool.BytesReader;
-import sweet.ribbon.RibbonStrategy.Reference;
 
 /**
  * ...

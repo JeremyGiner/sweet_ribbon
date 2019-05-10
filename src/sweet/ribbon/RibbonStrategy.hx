@@ -36,8 +36,6 @@ class RibbonStrategy {
 		if ( oMappingInfoProvider == null )
 			oMappingInfoProvider = new MappingInfoProvider();
 		
-
-		
 		_aCodexAtomic = [
 			{ // index : 0
 				encoderValidator: new Equal( null ), 
@@ -90,7 +88,7 @@ class RibbonStrategy {
 //_____________________________________________________________________________
 //	 Accessor
 	
-	public function getCodexIndex( o :Dynamic ) :Null<Int> {
+	public function getCodexIndex( o :Dynamic, aParent :List<Dynamic> ) :Null<Int> {
 		
 		// TODO : map result faster
 		
@@ -137,17 +135,5 @@ class RibbonStrategy {
 		if ( i < 0 || i >= _aCodex.length )
 			return null;
 		return _aCodex[i];
-	}
-}
-
-class Reference {
-	
-	var _iId :Int;
-	
-	public function new( iId :Int ) {
-		_iId = iId;
-	}
-	public function getId() {
-		return _iId;
 	}
 }

@@ -16,7 +16,7 @@ class BytesTool {
 		var oBytesWriter = new BytesWriter( Bytes.alloc( iLength ) );
 		
 		for ( oBytes in l ) {
-			trace('write : ' + oBytes.toHex());
+			//trace('write : ' + oBytes.toHex());
 			oBytesWriter.writeBytes( oBytes );
 		}
 		
