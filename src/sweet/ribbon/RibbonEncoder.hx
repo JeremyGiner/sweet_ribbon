@@ -136,7 +136,7 @@ class RibbonEncoder {
 private class Iterator {
 	
 	var _aObjectQueue :List<Dynamic>;
-	var _aParentStack :List<Dynamic>;
+	var _aParentStack :List<ParentReference>;
 	var _mObjectIndex :ObjectMap<Dynamic,Int>;
 	var _oStrategy :RibbonStrategy;
 	
@@ -151,7 +151,7 @@ private class Iterator {
 	public function new( o :Dynamic, oStrategy :RibbonStrategy ) {
 		
 		_aObjectQueue = new List<Dynamic>();
-		_aParentStack = new List<Dynamic>();
+		_aParentStack = new List<ParentReference>();
 		_mObjectIndex = new ObjectMap<Dynamic,Int>();
 		
 		_iDepthStopCount = 0;
@@ -167,7 +167,11 @@ private class Iterator {
 	}
 	public function next() {
 		var o = _aObjectQueue.pop();
-			
+		
+		// Increment current child index
+		if ( _aParentStack.first() != null )
+			_aParentStack.first().childIndex++;
+		
 		// Case depth stop
 		while ( o == _oDEPTHSTOP ) {
 			_aParentStack.pop();
@@ -196,7 +200,7 @@ private class Iterator {
 			// Queue children
 			var aChild = _oEncoder.getChildAr( o );
 			if ( aChild != null && aChild.length > 0 ) {
-				_aParentStack.push( o );
+				_aParentStack.push( {parent: o, childIndex: 0} );
 				_aObjectQueue.push( _oDEPTHSTOP );
 				_iDepthStopCount++;
 				for( o in aChild )
@@ -220,11 +224,16 @@ private class Iterator {
 
 /**
  * Token class used by iterator as delimiter in order to update his parent stack
+ * TODO : use enum instead
  */
 private class DEPTHSTOP {
 	public function new() {}
 }
 
+typedef ParentReference = {
+	var parent :Dynamic;
+	var childIndex :Int;
+};
 /*
 
 

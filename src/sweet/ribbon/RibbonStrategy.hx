@@ -6,6 +6,7 @@ import Type.ValueType;
 import sweet.functor.validator.IValidator;
 import sweet.functor.validator.Equal;
 import sweet.functor.validator.*;
+import sweet.ribbon.RibbonEncoder.ParentReference;
 
 
 
@@ -88,7 +89,7 @@ class RibbonStrategy {
 //_____________________________________________________________________________
 //	 Accessor
 	
-	public function getCodexIndex( o :Dynamic, aParent :List<Dynamic> ) :Null<Int> {
+	public function getCodexIndex( o :Dynamic, aParent :List<ParentReference> ) :Null<Int> {
 		
 		// TODO : map result faster
 		
