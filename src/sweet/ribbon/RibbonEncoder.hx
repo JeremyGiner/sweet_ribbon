@@ -133,7 +133,7 @@ class RibbonEncoder {
  * - circular/multiple reference are replace by a Reference object
  * TODO: simplify ?
  */
-private class Iterator {
+class Iterator {
 	
 	var _aObjectQueue :List<Dynamic>;
 	var _aParentStack :List<ParentReference>;

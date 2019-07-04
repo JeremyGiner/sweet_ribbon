@@ -35,7 +35,7 @@ class AMapper<C> implements IMapper<C> {
 		return this;
 	}
 	
-	public function createObject() {
+	public function createObject() :C {
 		throw 'This method is abstract, override it';
 		return null;
 	}

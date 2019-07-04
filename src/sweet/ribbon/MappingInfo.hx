@@ -22,4 +22,7 @@ class MappingInfo {
 		return _sClassName;
 	}
 	
+	public function toString() {
+		return 'MappingInfo#' + _sClassName+'#'+_aFieldName.toString();
+	}
 }

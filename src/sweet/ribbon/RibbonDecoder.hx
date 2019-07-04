@@ -65,7 +65,7 @@ class RibbonDecoder {
 			var iType = oReader.read();
 			
 			// Get Data
-			var oData = null;
+			var oData :Dynamic = null;
 			
 			// Case : using object decoder
 			var oSubDecoder = _oStrategy.getDecoder( iType );
@@ -76,15 +76,20 @@ class RibbonDecoder {
 				var oMapper = oSubDecoder.decode( oReader, aClassDesc );
 				oData = oMapper.getObject();
 				
-				// Push depth
-				aDepthStack.push( oMapper );
+				// Case : object have child -> Push depth
+				if( !oMapper.isFilled() ) {
+					aDepthStack.push( oMapper );
+					aObject.push( oMapper.getObject() ); 
+					continue;
+				}
+				
+				// Register object index
 				aObject.push( oMapper.getObject() ); 
 				
-				continue;
+				//continue;
 			
 			// Case : using atomic decoder
 			} else if( oDecoderAtomic != null ) {
-				
 				if ( oDecoderAtomic == null )
 					throw 'Cannot find subdecoder #' + iType;
 				
@@ -118,14 +123,14 @@ class RibbonDecoder {
 				if ( aDepthStack.length == 0 ) {
 					// Case : 
 					if ( oReader.getBytes().length != oReader.getPosition() )
-						throw 'Main mapper is over yet more info are left unread';
+						throw 'Main mapper is over yet '+((oReader.getBytes().length-1)-oReader.getPosition())+' byte(s) are left unread';
 					return oMapperChild.getObject();
 				}
 				aDepthStack.first().addChild( oMapperChild.getObject() );
 			}
 			
+			
 		}
-		
-		return aDepthStack.first().getObject();
+		return aDepthStack.last().getObject();
 	}
 }

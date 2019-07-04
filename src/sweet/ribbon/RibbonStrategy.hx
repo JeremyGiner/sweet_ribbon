@@ -102,20 +102,20 @@ class RibbonStrategy {
 		return null;
 	}
 	
-	public function getEncoder( i :Int ) {
+	public function getEncoder( i :Int ) :ISubEncoder<Dynamic> {
 		var oCodex = _getCodex( i );
 		return oCodex == null ? null : oCodex.encoder;
 	}
 	
-	public function getDecoder( i :Int ) {
+	public function getDecoder( i :Int ) :ISubDecoder {
 		var oCodex = _getCodex( i );
 		return oCodex == null ? null : oCodex.decoder;
 	}
-	public function getEncoderAtomic( i :Int ) {
+	public function getEncoderAtomic( i :Int ) :ISubEncoderBaseType<Dynamic> {
 		var oCodex = _getCodexAtomic( i );
 		return oCodex == null ? null : oCodex.encoder;
 	}
-	public function getDecoderAtomic( i :Int ) {
+	public function getDecoderAtomic( i :Int ) :ISubDecoderBaseType<Dynamic> {
 		var oCodex = _getCodexAtomic( i );
 		return oCodex == null ? null : oCodex.decoder;
 	}
