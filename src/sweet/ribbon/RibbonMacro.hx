@@ -13,6 +13,14 @@ import sweet.ribbon.MappingInfo;
  */
 class RibbonMacro {
 
+	
+	
+	macro static public function TEST() {
+		trace( Context.getLocalImports() );
+		trace( Context.getLocalModule() );
+		trace( Context.getLocalType() );
+		return macro var i = 0;
+	}
 	macro static public function getClassFieldNameAr( e :ExprOf<Class<Dynamic>> ) {
 		// Context.getType( 'MainTest.DataTest1' ) == 
 
@@ -32,14 +40,19 @@ class RibbonMacro {
 		
 		var oClass = TypeTools.getClass(Context.getType( s ));
 		var aExpr = new Array<Expr>();
-		for ( field in oClass.fields.get() ) {
+		while( oClass != null ) {
+			for ( field in oClass.fields.get() ) {
+				
+				// Filter non var
+				if ( field.kind.getName() != 'FVar' )
+					continue;
+				
+				aExpr.push( macro $v{ field.name } );
+			}
 			
-			// Filter non var
-			if ( field.kind.getName() != 'FVar' )
-				continue;
-			
-			aExpr.push( macro $v{ field.name } );
+			oClass = oClass.superClass == null ? null : oClass.superClass.t.get();
 		}
+		
 		/*
 		var myFunc:Function = { 
 			expr: macro return $v{['toto','ttiit']},  // actual value

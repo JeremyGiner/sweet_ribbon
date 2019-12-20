@@ -43,9 +43,9 @@ class RibbonEncoder {
 		
 		var oIterator = new Iterator( o, _oStrategy );
 		for ( o in oIterator ) {
-			
 			var iCodexIndex = oIterator.getCodexIndex();
 			
+			//trace('Type :' + iCodexIndex);
 			// Encode type
 			var oBytes = Bytes.alloc( 1 );
 			oBytes.set( 0, iCodexIndex );
@@ -133,7 +133,7 @@ class RibbonEncoder {
  * - circular/multiple reference are replace by a Reference object
  * TODO: simplify ?
  */
-private class Iterator {
+class Iterator {
 	
 	var _aObjectQueue :List<Dynamic>;
 	var _aParentStack :List<ParentReference>;
@@ -179,28 +179,40 @@ private class Iterator {
 			o = _aObjectQueue.pop();
 		}
 		
-		// Case : recurence -> use reference
-		if ( Reflect.isObject( o ) )
-		if ( _mObjectIndex.exists( o ) )
-			o = new Reference( _mObjectIndex.get( o ) );
-		else
-			_mObjectIndex.set( o, _iObjectIndex++ );
-			
-		// Get TypeId
+		
+		// Get TypeId and encoder
 		_iType = _oStrategy.getCodexIndex( o, _aParentStack );
 		if ( _iType == null )
 			throw 'No sub-encoder/decoder, for a given object'; //TODO: improve message
+		_oEncoder = _oStrategy.getEncoder( _iType );
+		
+		// Case : recurence -> use reference
+		if ( _oEncoder != null )
+		if ( _mObjectIndex.exists( o ) ) {
+			
+			// Turn into reference
+			o = new Reference( _mObjectIndex.get( o ) ); 
+			
+			// Get reference type and encoder
+			_iType = _oStrategy.getCodexIndex( o, _aParentStack );
+			if ( _iType == null )
+				throw 'No sub-encoder/decoder, for a given object'; //TODO: improve message
+			_oEncoder = null;// assume _oStrategy.getEncoder( _iType ) return null
+			
+		} else {
+			// Add to ObjectIndex
+			_mObjectIndex.set( o, (_iObjectIndex++) );
+		}
 		
 		//_________________________
-		// Case : Object encoding
-		_oEncoder = _oStrategy.getEncoder( _iType );
-		var oData = null;
+		// Case : is a structure with possible children
+		
 		if ( _oEncoder != null ) {
 			
 			// Queue children
 			var aChild = _oEncoder.getChildAr( o );
 			if ( aChild != null && aChild.length > 0 ) {
-				_aParentStack.push( {parent: o, childIndex: 0} );
+				_aParentStack.push( {parent: o, childIndex: -1} );
 				_aObjectQueue.push( _oDEPTHSTOP );
 				_iDepthStopCount++;
 				for( o in aChild )

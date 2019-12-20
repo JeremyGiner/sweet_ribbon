@@ -19,9 +19,9 @@ An encoder/decoder for a specific binary format nammed Ribbon, made with Haxe.
 
 \  | native | ribbon
 --- | --- | ---
-Circular reference | infinite loop | handle as expected
+Circular reference | clone or infinite loop | process object once then use reference
 Multiple reference | copy object | handle as same object
-Annonymous class / Enum | handle as expected | not implemented yet
+Annonymous class / Enum | handle as expected | not implemented
 
 ## Getting Started
 

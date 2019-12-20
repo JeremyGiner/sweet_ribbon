@@ -7,6 +7,7 @@ import sweet.ribbon.RibbonMacro;
 import sweet.ribbon.RibbonStrategy;
 import sweet.ribbon.MappingInfoProvider;
 import toto.DataTest1;
+import toto.DataTest1Extended;
 
 /**
  * ...
@@ -15,6 +16,8 @@ import toto.DataTest1;
 class MainTest {
 
 	static public function main() {
+		
+		//new TESTIMPORT();
 		
 		trace('Test 1 : Encode decode toto.DataTest1 ...');
 		
@@ -29,6 +32,9 @@ class MainTest {
 		);
 		
 		RibbonMacro.setMappingInfo( oMappingInfoProvider, DataTest1 );
+		RibbonMacro.setMappingInfo( oMappingInfoProvider, DataTest1Extended );
+		
+		//RibbonMacro.TEST();
 		
 		var oStrategy = new RibbonStrategy( oMappingInfoProvider );
 		
