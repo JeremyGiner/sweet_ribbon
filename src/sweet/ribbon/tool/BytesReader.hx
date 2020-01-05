@@ -57,6 +57,13 @@ class BytesReader {
 		_iPosition += 4;
 		return i;
 	}
+	
+	public function readFloat() {
+		var f = _oBytes.getFloat( _iPosition );
+		_iPosition += 8;
+		return f;
+	}
+	
 	public function readInt64(){
 		var i = _oBytes.getInt64( _iPosition );
 		_iPosition += 8;

@@ -18,7 +18,7 @@ class AMapper<C> implements IMapper<C> {
 		_oObject = createObject();
 	}
 	
-	public function getObject() {
+	public function getObject() :C {
 		return _oObject;
 	}
 	
