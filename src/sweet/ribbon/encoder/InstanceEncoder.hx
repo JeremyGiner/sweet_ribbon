@@ -13,8 +13,8 @@ class InstanceEncoder implements ISubEncoder<Dynamic> {
 	public function new( oMappingInfoProvider :IMappingInfoProvider ) {
 		_oMappingInfoProvider = oMappingInfoProvider;
 	}
-	public function encode( o :Dynamic, i :Null<Int> = null ) {
-		return (new IntEncoder()).encode( i ); //TODO use singleton
+	public function encode( o :Dynamic, iClassDescIndex :Null<Int> = null ) {
+		return (new IntEncoder()).encode( iClassDescIndex ); //TODO use singleton
 	}
 	public function getChildAr( o :Dynamic ) {
 		var a = new List<Dynamic>();

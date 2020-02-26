@@ -55,6 +55,7 @@ class RibbonEncoder {
 			// Case : Object encoding
 			var oEncoder = oIterator.getEncoder();
 			var oData = null;
+			
 			if ( oEncoder != null ) {
 				
 				// Encode class desc
@@ -192,7 +193,6 @@ class Iterator {
 			
 			// Turn into reference
 			o = new Reference( _mObjectIndex.get( o ) ); 
-			
 			// Get reference type and encoder
 			_iType = _oStrategy.getCodexIndex( o, _aParentStack );
 			if ( _iType == null )
