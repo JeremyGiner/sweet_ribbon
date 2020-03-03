@@ -165,6 +165,12 @@ class RibbonStrategy {
 			},
 			{
 				index: 9,
+				encoderValidator: new IsStructure(), 
+				encoder: new StructureEncoder(),
+				decoder: new StructureDecoder(),
+			},
+			{
+				index: 10,
 				encoderValidator: new IsObject(), 
 				encoder: new InstanceEncoder( oMappingInfoProvider ),
 				decoder: new InstanceDecoder(),

@@ -8,5 +8,4 @@ import sweet.functor.IFunction;
  */
 interface IMappingInfoProvider {
 	public function getMappingInfo( o :Dynamic) :MappingInfo;
-	public function getByClass( oClass :Class<Dynamic> ) :MappingInfo;
 }

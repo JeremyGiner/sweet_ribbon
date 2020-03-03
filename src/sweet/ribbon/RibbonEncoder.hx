@@ -110,10 +110,6 @@ class RibbonEncoder {
 		
 		var sClassName = oMappingInfo.getClassName();
 		
-		// Case : Annonymous structure
-		if ( sClassName == null )
-			throw 'Not implemented yet'; //TODO
-		
 		aBytes.add( _oStringEncoder.encode( sClassName ) );
 		aBytes.add( _oIntEncoder.encode( oMappingInfo.getFieldNameAr().length) );
 		for ( sField in oMappingInfo.getFieldNameAr() ) 
