@@ -11,7 +11,7 @@ class InstanceMapper extends AMapper<Dynamic> {
 		Reflect.setField( 
 			getObject(), 
 			_oClassDesc.getFieldNameAr()[ _aChild.length-1 ], 
-			_aChild[_aChild.length-1] 
+			untyped _aChild[_aChild.length-1] 
 		);//TODO: safe mode?
 		
 		return this;
