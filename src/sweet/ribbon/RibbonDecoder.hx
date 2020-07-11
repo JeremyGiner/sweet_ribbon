@@ -63,14 +63,13 @@ class RibbonDecoder {
 			// Get Type
 			var iType = oReader.read();
 			
-			//trace('Type:'+iType);
-			
 			// Get Data
 			var oData :Dynamic = null;
 			
 			// Case : using object decoder
 			var oSubDecoder = _oStrategy.getDecoder( iType );
 			var oDecoderAtomic = _oStrategy.getDecoderAtomic( iType );
+			
 			if ( oSubDecoder != null ) {
 				
 				// Decode
@@ -109,10 +108,17 @@ class RibbonDecoder {
 			} else 
 				throw 'decoder not found for id #' + iType;
 			
+			// Case : no parent, must be a singular data -> return
+			if ( aDepthStack.length == 0 ) {
+				return oData;
+			}
+			
+			
 			// Attach child to parent
 			var oParent = aDepthStack.first();
-			if ( oParent == null )
+			if ( oParent == null ) { // ???
 				continue;
+			}
 			oParent.addChild( oData );
 			
 			// Pop depth on mapper filled
